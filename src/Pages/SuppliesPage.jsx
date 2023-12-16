@@ -5,8 +5,8 @@ import { MdToggleOn, MdToggleOff } from "react-icons/md";
 import { useSupplies } from "../Context/Supplies.context.jsx";
 import { useCategorySupplies } from '../Context/CategorySupplies.context.jsx';
 import CreateSupplies from "../Components/CreateSupplies.jsx";
-import SeeLosses from "../Components/SeeLosses.jsx";
-import CreateLosses from '../Components/CreateLosses';
+// import SeeLosses from "../Components/SeeLosses.jsx";
+// import CreateLosses from '../Components/CreateLosses';
 import UpdateSupplies from "../Components/UpdateSupplies.jsx";
 import DeleteSupplies from "../Components/DeleteSupplies.jsx";
 import Pagination from '@mui/material/Pagination';
@@ -181,9 +181,9 @@ function SuppliesPage() {
                                     onUpdate={handleUpdateSupply}
                                   />
 
-                                  <CreateLosses supply={supply} onLossCreated={handleLossCreated} />
+                                  {/* <CreateLosses supply={supply} onLossCreated={handleLossCreated} /> */}
 
-                                  <SeeLosses supply={supply} />
+                                  {/* <SeeLosses supply={supply} /> */}
 
                                   <button
                                     onClick={() => handleDelete(supply)}
