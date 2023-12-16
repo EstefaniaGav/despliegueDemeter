@@ -6,7 +6,7 @@ import { useUser } from '../Context/User.context';
 import { MdToggleOn, MdToggleOff } from "react-icons/md";
 import ShoppingView from '../Components/ShoppingView';
 import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
+// import pdfFonts from 'pdfmake/build/vfs_fonts';
 import '../css/style.css';
 import "../css/landing.css";
 import Pagination from '@mui/material/Pagination';
@@ -14,7 +14,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 
 function ShoppingPage() {
