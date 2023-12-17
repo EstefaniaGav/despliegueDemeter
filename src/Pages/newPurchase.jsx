@@ -11,18 +11,18 @@ import Stack from '@mui/material/Stack';
 import Select from 'react-select';
 import CreateSupplies from '../Components/CreateSupplies';
 import useLocaStorage from '../hooks/useLocaStorage';
-
-
+import { useUser } from '../Context/User.context';
 
 function NewPurchase() {
   const { register, handleSubmit, reset, setValue } = useForm();
   const { createMultipleShopping } = useShoppingContext()
   const [error, setError] = useState("")
+  const { getCurrentUser } = useUser()
   const [selectedSupplies, setSelectedSupplies, destroy] = useLocaStorage("suppliesTable", [])
   const [shoppingBillState, setShoppingBillState] = useState({
     total: 0
   })
-  const [refreshPage, setRefreshPage] = useState(false);
+  const [selectedMeasure, setSelectedMeasure] = useState(null);
 
   const [availableSupplies, setAvailableSupplies] = useState([]);
 
@@ -58,21 +58,38 @@ function NewPurchase() {
   //   "value": 2,
   //   "label": "Jorge"
   // }
-  const onConfirm = async ({ value, uuidv4 }) => {
-    const data = selectedSupplies.map(({ ID_Supplies, ...data }) => ({
+  const onConfirm = async ({ value, uuidv4, navigateToMainShopping }) => {
+
+    const condition = selectedSupplies.every(supplier => Object.keys(supplier).every(s => !!s)) && !!value && !!uuidv4
+
+    const currentUser = await getCurrentUser()
+    if (!condition || !currentUser) {
+      setError("Llena todos los campos")
+
+      setTimeout(() => {
+        setError("")
+      }, 1000)
+
+      return
+    }
+
+    const data = selectedSupplies.map(({ ID_Supplies, Price_Supplier, Lot, ...data }) => ({
       shoppingDetails: {
         ...data,
+        Lot: parseFloat(Lot),
+        Price_Supplier: parseFloat(Price_Supplier),
         Supplies_ID: ID_Supplies
       },
-      Total: shoppingBillState.total,
+      Total: parseFloat(shoppingBillState.total),
       State: 1,
       Supplier_ID: value,
-      User_ID: 1,
+      User_ID: currentUser?.ID_User,
       Invoice_Number: uuidv4
     }))
 
     await createMultipleShopping(data)
     destroy()
+    navigateToMainShopping()
 
   }
 
@@ -152,6 +169,8 @@ function NewPurchase() {
   const onSelectSupplie = (option) => {
     // console.log(target.querySelector("selected").value)
     supplierRef.current = option.value
+    const selectedSupplie = suppliesState.find((supply) => supply.ID_Supplies === option.value);
+    setSelectedMeasure(selectedSupplie.Measure);
   }
 
   const onDeleteSupplie = (id) => {
@@ -162,24 +181,34 @@ function NewPurchase() {
   const customStyles = {
     control: (provided, state) => ({
       ...provided,
-      width: '200px',
-      minHeight: '30px',
-      fontSize: '14px',
-      marginLeft: '20px',
-      border: `1px solid ${state.isFocused ? '#FFA500' : 'black'}`,
+      // padding: '10px',
+      // fontSize: '15px',
+      width: '220px',
       height: '34px',
-      borderColor: state.isFocused ? '#FFA500' : 'black',
-      boxShadow: state.isFocused ? '0 0 0 1px #FFA500' : 'none',
-      "&:focus-within": {
-        borderColor: '#FFA500',
-      }
+
+      border: '1px solid black',
+      // borderRadius: '4px',
+      // minHeight: '34px',
+      // width: '200px',
+      // fontSize: '14px',
+      // marginLeft: '20px',
+      // border: `1px solid ${state.isFocused ? '#FFA500' : 'black'}`,
+      // height: '34px',
+      // borderColor: state.isFocused ? '#FFA500' : 'black',
+      //     ...mediaQueryStyles['@media screen and (max-width: 1179px)'], // Agrega los estilos de la media query
+
+      // boxShadow: state.isFocused ? '0 0 0 1px #FFA500' : 'none',
+      // "&:focus-within": {
+      //   borderColor: '#FFA500',
+      // }
     }),
     menu: (provided) => ({
       ...provided,
-      fontSize: '14px',
-      width: '200px',
-      marginLeft: '20px',
+      // fontSize: '14px',
+      // width: '110px',
+      // marginLeft: '20px',
     }),
+
   };
 
   const setCreatedSupplie = (data) => {
@@ -205,6 +234,7 @@ function NewPurchase() {
 
   const floatValidation = (text, type) => {
     let newValue = text.replace(/[^0-9.]+/g, '')
+    console.log("newValue", newValue)
 
     if (newValue.split("").filter(n => n === ".").length > 1 || text[0] == 0 || text[0] === ".") {
       newValue = newValue.slice(0, -1)
@@ -212,170 +242,175 @@ function NewPurchase() {
 
     setValue(type, newValue)
   }
+
+  const handleCreateSupplies = () => {
+    window.location.reload()
+  }
+
   return (
-
     <div className='pc-container'>
-    <div className="flex mb-5 mx-10 mr-5 w-200">
-      <div className="card mt-20 mx-6 intento">
-        <div className="card-header">
-          <h5>Detalle de compras</h5>
-        </div>
-        <div className=" card-body table-border-style mt-5 ">
-          <form onSubmit={handleSubmit(onSubmit)} >
-            <div className='position-shoppping'>
-              <div className="flex flex-row mb-5 ml-5">
-                <div className="mr-5">
-                  <div className='mt-12 flex flex-col gap-4'>
-                    <div className='my-1 flex items-center gap-4'>
-                    <div className=''>
-                      <label
-                  variant="small"
-                  color="blue-gray"
-                  className="mb-2 font-medium"
-                >
-                  Insumo:
-                </label>
-                    <Select
-                     
-                  labelProps={{
-                    className: "before:content-none after:content-none",
-                  }}
-                      onChange={(option) => onSelectSupplie(option)}
-                      options={availableSupplies.map(({ ID_Supplies, Name_Supplies }) => ({
-                        value: ID_Supplies,
-                        label: Name_Supplies,
+      <div className="flex mb-5 mx-10 mr-5 w-200">
+        <div className="card mt-20 mx-6 intento">
+          <div className="card-header">
+            <h5>Detalle de compras</h5>
+          </div>
+          <div className=" card-body table-border-style mt-5 ">
+            <form onSubmit={handleSubmit(onSubmit)} >
+              <div className='position-shoppping'>
+                <div className="flex flex-row mb-5 ml-5">
+                  <div className="mr-5">
+                    <div className='mt-12 flex flex-col gap-4'>
+                      <div className='my-1 flex items-center gap-4'>
+                        <div className=''>
+                          <label
+                            variant="small"
+                            color="blue-gray"
+                            className="mb-2 font-medium"
+                          >
+                            Insumo:
+                          </label>
+                          <Select
 
-                      }))}
-                      placeholder=""
-                      styles={customStyles}
-                    />
+                            labelProps={{
+                              className: "before:content-none after:content-none",
+                            }}
+                            onChange={(option) => onSelectSupplie(option)}
+                            options={availableSupplies.map(({ ID_Supplies, Name_Supplies }) => ({
+                              value: ID_Supplies,
+                              label: Name_Supplies,
+
+                            }))}
+                            placeholder=""
+                            styles={customStyles}
+                          />
+                        </div>
+
+                        <div className=''>
+                          <label
+                            variant="small"
+                            color="blue-gray"
+                            className="mb-2 font-medium"
+                          >
+                            Cantidad:
+                          </label>
+                          <br />
+
+                          <input className=" input-width "
+                            labelProps={{
+                              className: "before:content-none after:content-none ",
+                            }}
+                            containerProps={{ className: "mt-4" }}
+                            type="text" {...register("Lot")}
+                            onInput={e => floatValidation(e.target.value, "Lot")}
+                          />
+
+                          <CreateSupplies setCreatedSupplie={setCreatedSupplie} whenSubmit={handleCreateSupplies} />
+                        </div>
                       </div>
+                      <div className='my-1 flex items-center gap-4'>
+                        <div>
+                          <label
+                            variant="small"
+                            color="blue-gray"
+                            className="mb-2 font-medium"
+                          >
+                            Medida:
+                          </label>
+                          <br />
+                          <input
+                            value={selectedMeasure || ''}
+                            readOnly
+                            className="input-width  rounded-md p-1 "
+                          />
+                        </div>
 
-                      <div className=''>
-                      <label
-                  variant="small"
-                  color="blue-gray"
-                  className="mb-2 font-medium"
-                >
-                  Cantidad:
-                </label>
-                  <br />
-
-                    <input  className=" input-width "
-                    labelProps={{
-                      className: "before:content-none after:content-none ",
-                    }}
-                   containerProps={{ className: "mt-4" }}
-                   type="number" {...register("Lot")} 
-
-                   />
-                
-                    <CreateSupplies setCreatedSupplie={setCreatedSupplie} />
+                        <div>
+                          <label
+                            variant="small"
+                            color="blue-gray"
+                            className="mb-2 font-medium"
+                          >
+                            Precio:
+                          </label>
+                          <br />
+                          <input className=" input-width " type="text" {...register("Price_Supplier")}
+                            onInput={e => floatValidation(e.target.value, "Price_Supplier")} />
+                          <button title='Presiona para agregar el insumo' type="submit" className="btn btn-icon btn-primary position-boton ">Agregar insumo</button>
+                        </div>
                       </div>
                     </div>
-                    <div className='my-1 flex items-center gap-4'>
-                    <div>
-                    <label
-                  variant="small"
-                  color="blue-gray"
-                  className="mb-2 font-medium"
-                >
-                  Medida:
-                </label>
-                   <br />
-                     <input
-                    //  value={selectedMeasure || ''}
-                      readOnly
-                      className="input-width  rounded-md p-1 "
-                    />
-                      </div>
+                  </div>
+                  <div className='ml-2'>
+                  </div>
+                </div>
 
-                      <div>
-                      <label
-                  variant="small"
-                  color="blue-gray"
-                  className="mb-2 font-medium"
-                >
-                  Precio:
-                </label>
-                    <br />
-                    <input className=" input-width " type="number" {...register("Price_Supplier")} />
-                    <button title='Presiona para agregar el insumo' type="submit" className="btn btn-icon btn-primary position-boton ">Agregar insumo</button>
-                      </div>
-                    </div>
-                    </div>                
+                <div className="flex mb-3">
+
+
+                  <div>
+                  </div>
+                  <div className='flex flex-column ml-3  '>
+
+
+
+
+                  </div>
+
+
+
                 </div>
-                <div className='ml-2'>
-                </div>
+                {error && <p className='ml-5'>{error}</p>}
               </div>
 
-              <div className="flex mb-3">
+            </form>
 
-
-                <div>
-                </div>
-                <div className='flex flex-column ml-3  '>
-                
-
-             
-
-                </div>
-
-
-
+            <div className="position-table ">
+              <table className="table table-sm ml-2 table-static ">
+                <thead>
+                  <tr>
+                    <th>Insumo</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    selectedSupplies.slice(startIndex, endIndex).map(({ Lot, Price_Supplier, supplieName, Measure, ID_Supplies }) => (
+                      <tr key={ID_Supplies}>
+                        <td>{supplieName}</td>
+                        <td>{Lot}</td>
+                        <td>{Price_Supplier}</td>
+                        <td>
+                          <button type="button" className="btn btn-icon btn-danger" onClick={() => onDeleteSupplie(ID_Supplies)}>
+                            <AiFillDelete />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+              <div className="pagination-container">
+                <Stack spacing={2} direction="row" justifyContent="center">
+                  <Pagination
+                    count={Math.ceil(selectedSupplies.length / itemsPerPage)}
+                    color="secondary"
+                    page={page}
+                    onChange={handleChangePage}
+                  />
+                </Stack>
               </div>
-              {error && <p className='ml-5'>{error}</p>}
-            </div>
-
-          </form>
-
-          <div className="position-table ">
-            <table className="table table-sm ml-2 table-static ">
-              <thead>
-                <tr>
-                  <th>Insumo</th>
-                  <th>Cantidad</th>
-                  <th>Precio</th>
-                  <th>Acción</th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  selectedSupplies.slice(startIndex, endIndex).map(({ Lot, Price_Supplier, supplieName, Measure, ID_Supplies }) => (
-                    <tr key={ID_Supplies}>
-                      <td>{supplieName}</td>
-                      <td>{Lot}</td>
-                      <td>{Price_Supplier}</td>
-                      <td>
-                        <button type="button" className="btn btn-icon btn-danger" onClick={() => onDeleteSupplie(ID_Supplies)}>
-                          <AiFillDelete />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
-            <div className="pagination-container">
-              <Stack spacing={2} direction="row" justifyContent="center">
-                <Pagination
-                  count={Math.ceil(selectedSupplies.length / itemsPerPage)}
-                  color="secondary"
-                  page={page}
-                  onChange={handleChangePage}
-                />
-              </Stack>
             </div>
           </div>
         </div>
-      </div>
-      <div className='position-facture ml-5 '>
+        <div className='position-facture ml-5 '>
 
-        <ShoppingBill {...shoppingBillState} onConfirm={onConfirm} />
+          <ShoppingBill {...shoppingBillState} onConfirm={onConfirm} />
+        </div>
       </div>
     </div>
-  </div>
-)
+  )
 }
 
 export default NewPurchase;

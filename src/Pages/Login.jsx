@@ -4,6 +4,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible, AiOutlineMail, AiOutlineLock } fro
 import { useUser } from "../Context/User.context.jsx";
 import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import '../css/style.css'
 import '../css/general.css'
 import '../css/landing.css'
@@ -35,6 +36,9 @@ function Login() {
 		if (isAuthenticated) navigate('/dashboard')
 	}, [isAuthenticated])
 
+	// const GetCookie = () => {
+	// 	alert(Cookies.get('token'));
+	//   };
 
 
 	return (
@@ -96,7 +100,7 @@ function Login() {
 										{loginError && (
 											<p className="text-red-500">{loginError}</p>
 										)}
-										<button type="submit" title="Presiona para iniciar sesión" className="btn btn-block btn-primary mb-4">Iniciar sesión</button>
+										<button  type="submit" title="Presiona para iniciar sesión" className="btn btn-block btn-primary mb-4">Iniciar sesión</button>
 									</form>
 									<p className="mb-0 text-muted">
 										¿Desea restablecer la contraseña? <Link to="/resetPassword" title="Presiona para recuperar contraseña" className="f-w-400">Recuperar</Link>

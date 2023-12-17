@@ -217,11 +217,12 @@ top: 70px;
 }
 
 .position-boton{
-  width: 100px;
-  height: 40px;
-  position: relative;
+  width: 110px;
+  height: 52px;
+  margin-left: 5px;
+  /* position: relative;
   top: 50px;
-  right: 100px;
+  right: 100px; */
 }
 }
 .pagination-container {

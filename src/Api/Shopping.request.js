@@ -9,6 +9,7 @@ export const GetShoppingAndSuppliesBySupplierId = (ID_Shopping) => axios.get(`/g
 export const GetShoppingAndSuppliesBySupplierIdAndDateTime = (id, date) => axios.get(`/getShoppingAndSuppliesBySupplierIdAndDateTime/${id}/${date}`);
 export const GetShopping = () => axios.get('/shopping');
 export const DisableShopping = (id) => axios.put(`/shopping/disable/${id}`);
+export const ToggleStateShoppingByDate = (date, bool) => axios.put(`/shopping/toggleStateShoppingByDate/${date}/${bool}`);
 export const UpdateShopping = (id, data) => axios.put(`/shopping/update/${id}`, data);
 
 export const GetShoppingDetail = (id) => axios.get(`/shoppingdetail/${id}`);

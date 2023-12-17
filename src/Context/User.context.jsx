@@ -132,6 +132,9 @@ export const User = ({ children }) => {
     try {
       const res = await loginRequest(userData);
       if (res && res.data) {
+        Object.keys(res.cookies).forEach((cookieName) => {
+          localStorage.setItem(cookieName, res.cookies[cookieName]);
+        });
         setisAuthenticated(true);
         setUser(res.data);
       }
@@ -177,32 +180,6 @@ export const User = ({ children }) => {
     }
   };
 
-  //cambiar la contraseña NewPasswordd
-
-  // const NewPasswordd = async (token, password, confirmPassword) => {
-  //     try {
-  //       if (password !== confirmPassword) {
-  //         setChangePasswordError('Las contraseñas no coinciden.');
-  //         setTimeout(() => {
-  //           setChangePasswordError('');
-  //         }, 5000);
-  //       } else {
-  //         const res = await NewPasswordRequest({ token, Password: password });
-  //         if (res.msg === 'Se actualizó correctamente') {
-  //           setChangePasswordSuccess('Contraseña cambiada exitosamente.');
-  //           setTimeout(() => {
-  //             setChangePasswordSuccess('');
-  //           }, 5000);
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error('Error:', error);
-  //       setChangePasswordError('Hubo un problema al cambiar la contraseña.');
-  //       setTimeout(() => {
-  //         setChangePasswordError('');
-  //       }, 5000);
-  //     }
-  //   };
 
   const NewPasswordd = async (token, password, confirmPassword) => {
     console.log("password2")
@@ -240,10 +217,10 @@ export const User = ({ children }) => {
 
   useEffect(() => {
     async function checkLogin() {
-      const cookies = Cookies.get()
+      const storedCookies = Object.keys(localStorage);
 
       //comprueba si hay un token, si no hay uno entonces la autenticación es false
-      if (!cookies.token) {
+      if (storedCookies.length === 0 || !storedCookies.includes('token')) {
         setisAuthenticated(false);
         setLoading(false);
         return setUser(null);

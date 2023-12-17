@@ -1,5 +1,5 @@
 import { createContext, useState, useContext } from 'react';
-import { CreateShopping, GetOneShopping, GetShopping, DisableShopping, UpdateShopping, GetShoppingDetail, GetShoppingDetails, CreateShoppingDetail, CreateManyDetails, CreateMultipleShopping, GetShopingAndShopingDetails, GetShopingByProvider, GetShoppingAndSuppliesBySupplierId, GetShoppingAndSuppliesBySupplierIdAndDateTime } from '../Api/Shopping.request.js'
+import { CreateShopping, GetOneShopping, GetShopping, DisableShopping, UpdateShopping, GetShoppingDetail, GetShoppingDetails, CreateShoppingDetail, CreateManyDetails, CreateMultipleShopping, GetShopingAndShopingDetails, GetShopingByProvider, GetShoppingAndSuppliesBySupplierId, GetShoppingAndSuppliesBySupplierIdAndDateTime, ToggleStateShoppingByDate } from '../Api/Shopping.request.js'
 
 export const ShoppingContext = createContext();
 
@@ -48,6 +48,7 @@ export const ShoppingProvider = ({ children }) => {
   const getShopingByProvider = async () => {
     try {
       const res = await GetShopingByProvider();
+      console.log("res", res)
       return res.data
     } catch (error) {
       return []
@@ -91,6 +92,27 @@ export const ShoppingProvider = ({ children }) => {
     } catch (error) {
       console.log(error);
       return null
+    }
+  };
+
+  const toggleStateShoppingByDate = async (date, bool) => {
+    try {
+      const res = await ToggleStateShoppingByDate(date, bool);
+
+      if (res.status === 200) {
+        setShopping((prevShopping) =>
+          prevShopping.map((data) =>
+            data.ID_Shopping === id
+              ? { ...data, State: !data.State }
+              : data
+          )
+        );
+      }
+
+      return res.data
+    } catch (error) {
+      console.log(error);
+      return { isToggled: false }
     }
   };
 
@@ -212,7 +234,8 @@ export const ShoppingProvider = ({ children }) => {
         getShopingAndShopingDetails,
         getShopingByProvider,
         getShoppingAndSuppliesBySupplierId,
-        getShoppingAndSuppliesBySupplierIdAndDateTime
+        getShoppingAndSuppliesBySupplierIdAndDateTime,
+        toggleStateShoppingByDate
       }}
     >
       {children}

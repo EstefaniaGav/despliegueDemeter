@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import '../css/style.css'
-import ConfirmShop from './confirmShop';
+import ConfirmShop from './ConfirmShop.jsx';
 import CancelShop from './CancelShop';
 import { useSupplier } from '../Context/Supplier.context';
 import { useUser } from '../Context/User.context';
@@ -95,6 +95,10 @@ function ShoppingBill({ total = 0, onConfirm, onClose, ...confirmValues }) {
     uuidv4
   }
 
+  const handleBillId = (text) => {
+    setUuidv4(text.replace(/\s+/g, ""))
+  }
+
 
   return (
 
@@ -109,8 +113,8 @@ function ShoppingBill({ total = 0, onConfirm, onClose, ...confirmValues }) {
         <div className="flex mb-2 mr-2">
           <h5 className=' mt-2'>N. factura:</h5>
           <input className='custom-input-facture' type="text"
-            value={uuidv4.length > 20 ? uuidv4.slice(0, 20) + "..." : uuidv4}
-            onChange={e => setUuidv4(e.target.value)}
+            value={uuidv4.length > 30 ? uuidv4.slice(0, 30) + "..." : uuidv4}
+            onChange={e => handleBillId(e.target.value)}
             placeholder='Identificador de la factura'
           />
           {/* <input className='custom-input-facture' type="text" value={uuidv4.length > 20 ? uuidv4.slice(0, 20) + "..." : uuidv4} /> */}
@@ -131,7 +135,7 @@ function ShoppingBill({ total = 0, onConfirm, onClose, ...confirmValues }) {
         </div>
         <hr className='ml-2 mt-4' />
         <div>
-          <h1 className='text-center mt-5'>$ {total}</h1>
+          <h1 className='text-center mt-5'>$ {total.toLocaleString()}</h1>
           <p className='text-center mt-1'>Total</p>
         </div>
 

@@ -6,7 +6,7 @@ import { useUser } from '../Context/User.context';
 import { MdToggleOn, MdToggleOff } from "react-icons/md";
 import ShoppingView from '../Components/ShoppingView';
 import pdfMake from 'pdfmake/build/pdfmake';
-// import pdfFonts from 'pdfmake/build/vfs_fonts';
+
 import '../css/style.css';
 import "../css/landing.css";
 import Pagination from '@mui/material/Pagination';
@@ -14,11 +14,11 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-// pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
 
 
 function ShoppingPage() {
-  const { getOneShopping, shopping: Shopping, selectAction, disableShopping, getShopingByProvider } = useShoppingContext();
+  const { getOneShopping, shopping: Shopping, selectAction, disableShopping, toggleStateShoppingByDate, getShopingByProvider } = useShoppingContext();
   const [searchTerm, setSearchTerm] = useState("");
   const { getCurrentUser } = useUser();
   const [currentUser, setCurrentUser] = useState({})
@@ -29,6 +29,13 @@ function ShoppingPage() {
 
   useEffect(() => {
     localStorage.setItem("showEnabledOnly", showEnabledOnly);
+
+    return () => {
+      import("pdfmake/build/vfs_fonts")
+        .then(def => {
+          pdfMake.vfs = def.default?.pdfMake.vfs;
+        })
+    }
   }, [showEnabledOnly]);
 
 
@@ -40,8 +47,6 @@ function ShoppingPage() {
       setCurrentUser(user)
     };
   }, []);
-
-  const status = Shopping.State ? "" : "desactivado";
 
   //función para mostrar solo los inhabilitados
 
@@ -161,21 +166,24 @@ function ShoppingPage() {
         },
       },
     };
-
-    pdfMake.createPdf(documentDefinition).download('shopping_report.pdf');
+    const pdfDoc = pdfMake.createPdf(documentDefinition);
+    pdfDoc.open();
   };
 
-  const handleDisableShopping = async (id) => {
-    const disabledShopping = await disableShopping(id)
+  const onToggleStateShoppingByDate = async (id, date, bool) => {
 
-    if (disabledShopping == null) return
+    const newBool = bool ? "false" : "true"
 
-    setShoppingData(prev =>
-      prev.map((data) =>
-        data.ID_Shopping === disabledShopping.ID_Shopping
-          ? { ...data, State: !data.State }
-          : data
-      ))
+    const { isToggled } = await toggleStateShoppingByDate(date, newBool)
+
+    if (isToggled) {
+      setShoppingData(prev =>
+        prev.map((data) =>
+          data.ID_Shopping === id
+            ? { ...data, State: !data.State }
+            : data
+        ))
+    }
   }
 
   return (
@@ -269,7 +277,7 @@ function ShoppingPage() {
                               <td>{Invoice_Number}</td>
                               <td>{Name_Supplier}</td>
                               <td>{Total}</td>
-                              <td className={`${status}`}>
+                              <td className={`${State ? "" : "desactivado"}`}>
                                 {State ? "Habilitado" : "Deshabilitado"}
                               </td>
 
@@ -279,14 +287,14 @@ function ShoppingPage() {
                                 <button
                                   type="button"
                                   title='Presiona para inhabilitar o habilitar la compra'
-                                  className={`btn  btn-icon btn-success ${status}`}
-                                  onClick={() => handleDisableShopping(ID_Shopping)}
+                                  className={`btn  btn-icon btn-success ${State ? "" : "desactivado"}`}
+                                  onClick={() => onToggleStateShoppingByDate(ID_Shopping, Datetime, State)}
 
                                 >
                                   {State ? (
-                                    <MdToggleOn className={`estado-icon active${status}`} />
+                                    <MdToggleOn className={`estado-icon active${State ? "" : "desactivado"}`} />
                                   ) : (
-                                    <MdToggleOff className={`estado-icon inactive${status}`} />
+                                    <MdToggleOff className={`estado-icon inactive${State ? "" : "desactivado"}`} />
 
                                   )}
                                 </button>
