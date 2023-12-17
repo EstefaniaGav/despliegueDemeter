@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { BiEdit } from 'react-icons/bi';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
@@ -69,7 +69,7 @@ function UpdateSupplies({
         setError,
     } = useForm();
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (supplyToEdit) {
             setValue('Name_Supplies', supplyToEdit.Name_Supplies);
             setValue('Unit', supplyToEdit.Unit);
@@ -210,7 +210,7 @@ function UpdateSupplies({
                                             )}
                                         </div>
 
-                                        <div className="form-group col-md-6">
+                                        {/* <div className="form-group col-md-6">
                                             <label htmlFor="Unit" className="form-label">
                                                 Cantidad:
                                             </label>
@@ -242,10 +242,10 @@ function UpdateSupplies({
                                             {errors.Unit && (
                                                 <p className="text-red-500">{errors.Unit.message}</p>
                                             )}
-                                        </div>
-                                    </div>
+                                        </div> */}
 
-                                    <div className="control">
+
+
                                         <div className="form-group col-md-6">
                                             <label htmlFor="Measure" className="form-label">
                                                 Medida:
@@ -284,7 +284,9 @@ function UpdateSupplies({
                                                 <p className="text-red-500">{errors.Measure.message}</p>
                                             )}
                                         </div>
+                                    </div>
 
+                                    <div className="control">
                                         <div className="form-group col-md-6">
                                             <label htmlFor="Stock" className="form-label">
                                                 Existencia mínima:
@@ -303,8 +305,8 @@ function UpdateSupplies({
                                                             const parsedValue = parseFloat(value);
                                                             const parsedUnit = parseFloat(Unit);
 
-                                                            if (parsedValue < 0 || parsedValue > 9999) {
-                                                                return 'La existencia mínima debe estar entre 0 y 9999.';
+                                                            if (parsedValue < 0 || parsedValue > 99999) {
+                                                                return 'La existencia mínima debe estar entre 0 y 99.999.';
                                                             }
 
                                                             if (parsedValue > parsedUnit) {
@@ -324,9 +326,8 @@ function UpdateSupplies({
                                                 <p className="text-red-500">{errors.Stock.message}</p>
                                             )}
                                         </div>
-                                    </div>
 
-                                    <div className="city">
+
                                         <div className="form-group col-md-6 select-rebeld">
                                             <label htmlFor="SuppliesCategory_ID" className="form-label">
                                                 Categoría:

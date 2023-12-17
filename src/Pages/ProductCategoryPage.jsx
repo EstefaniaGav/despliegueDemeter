@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { BiEdit } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import { MdToggleOn, MdToggleOff } from "react-icons/md";
@@ -29,7 +29,7 @@ function ProductCategoryPage() {
   const ITEMS_PER_PAGE = 7;
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     getCategory_products();
     setCurrentPage(1);
   }, []);

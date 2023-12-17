@@ -48,7 +48,6 @@ const customStyles = {
 
 function CreateSupplies({
   onDefaultSubmit = null,
-  whenSubmit = () => null,
   buttonProps = {
     buttonClass: 'btn btn-primary',
     buttonText: 'Registrar',
@@ -97,12 +96,11 @@ function CreateSupplies({
       SuppliesCategory_ID: selectedCategory.value,
     };
 
-    await createSupplies(dataToSend);
+    createSupplies(dataToSend);
     setOpen(false);
     reset();
     setSelectedMeasure(null);
     setSelectedCategory(null);
-    whenSubmit()
   });
 
   const onCancel = () => {
@@ -285,8 +283,8 @@ function CreateSupplies({
                               const parsedValue = parseFloat(value);
                               const parsedUnit = parseFloat(Unit);
 
-                              if (parsedValue < 0 || parsedValue > 9999) {
-                                return 'La existencia mínima debe estar entre 0 y 9.999.';
+                              if (parsedValue < 0 || parsedValue > 99999) {
+                                return 'La existencia mínima debe estar entre 0 y 99.999.';
                               }
 
                               if (parsedValue > parsedUnit) {
@@ -297,7 +295,7 @@ function CreateSupplies({
                         })}
                         maxLength={4}
                         onInput={(e) => {
-                          e.target.value = e.target.value.replace(/[^\d.]/g, '');
+                          e.target.value = e.target.value.replace(/[^\d.]/g, ''); 
                         }}
                         type="text"
                         className="form-control"
