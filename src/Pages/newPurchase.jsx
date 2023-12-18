@@ -154,7 +154,7 @@ function NewPurchase() {
     }))
   }
   useEffect(() => {
-    // setSuppliesState(getSupplies())
+    setSuppliesState(getShopSupplies())
     // console.log("Supplies")
     updateTotalValue()
     return async () => {
