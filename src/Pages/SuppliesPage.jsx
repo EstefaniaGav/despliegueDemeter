@@ -183,7 +183,7 @@ function SuppliesPage() {
 
                                   {/* <CreateLosses supply={supply} onLossCreated={handleLossCreated} /> */}
 
-                                  <SeeLosses supply={supply} />
+                                  {/* <SeeLosses supply={supply} /> */}
 
                                   <button
                                     onClick={() => handleDelete(supply)}
