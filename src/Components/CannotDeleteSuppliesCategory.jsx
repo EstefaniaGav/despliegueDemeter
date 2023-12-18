@@ -38,7 +38,7 @@ const buttonStyles = {
 };
 
 
-function CannotDeleteCategory({ onClose, onDelete }) {
+function CannotDeleteCategory({ onClose }) {
     return (
         <div style={overlayStyles} onClick={onClose}>
             <div style={modalStyles}>

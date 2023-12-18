@@ -14,21 +14,21 @@ function Sales() {
     const [categoryImages, setCategoryImages] = useState({});
     const [productNames, setProductNames] = useState({});
     const { Sale, CreateDetail, getDetailsSale, Count, total, fetchSales, Sales, addnewDetail, newDetails, setNewCost, newCost, action } = useSaleContext();
-    const [newSaleID, setNewSaleID] =useState()
+    const [newSaleID, setNewSaleID] = useState()
     useEffect(() => {
         fetchProductCategories();
-        
+
         if (Sales.length > 0 && action == 1) {
             setNewSaleID((Sales[Sales.length - 1].ID_Sale) + 1);
         }
-        else if(action == 2){
+        else if (action == 2) {
             setNewSaleID(Sale.ID_Sale)
 
         }
-        else{
+        else {
             setNewSaleID(1);
         }
-        
+
     }, []);
     const handleCategoryChange = (event) => {
         const newCategoryID = event.target.value;
@@ -51,7 +51,7 @@ function Sales() {
             fetchProductsForCategory(newCategoryID);
         }
 
-        
+
     };
 
     useEffect(() => {
@@ -65,7 +65,7 @@ function Sales() {
         fetchProduct(categoryID)
             .then(data => {
                 const images = data.map(product => product.Image);
-                const names = data.map(product => product.Name_Products);
+                const names = data.map(product => product?.Name_Products || "");
                 setCategoryImages({ ...categoryImages, [categoryID]: images });
                 setProductNames({ ...productNames, [categoryID]: names });
             })
@@ -74,18 +74,18 @@ function Sales() {
             });
     };
 
-    const detail = ( ID_Product) =>{
+    const detail = (ID_Product) => {
         const data = {
-            Sale_ID : newSaleID,
-            Product_ID : ID_Product,
+            Sale_ID: newSaleID,
+            Product_ID: ID_Product,
             Lot: 1
         }
         addnewDetail(data)
-        
+
     }
     const handleImageClick = async (categoryID, imageIndex) => {
-        
-    
+
+
         try {
             const data = await fetchProduct(categoryID);
             const selectedProductID = data[imageIndex].ID_Product;
@@ -96,8 +96,8 @@ function Sales() {
         setSelectedCategory('');
         console.log(newDetails)
     };
-    
-    
+
+
     return (
         <div className=" ">
             <h1 className="text-3xl font-bold mb-4">Ventas 1.0 </h1>
@@ -145,8 +145,8 @@ function Sales() {
                 </div>
                 <div className="contenedor derecho w-[50vh] bg-gray-200 border border-gray-400 rounded-lg h-[60vh] shadow-lg relative mt-[10vh]">
                     <div className="h-full w-full overflow-hidden">
-                    
-                    {action === 1 ? <Bill /> : action === 2 ? <Edit_Bill /> : null}
+
+                        {action === 1 ? <Bill /> : action === 2 ? <Edit_Bill /> : null}
                     </div>
                 </div>
             </div>

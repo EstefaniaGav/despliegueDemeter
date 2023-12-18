@@ -59,7 +59,7 @@ function UpdateProduct() {
 
     const onSubmit = handleSubmit(async (values) => {
         values.ProductCategory_ID = selectedCategory.value;
-        
+
         updateProduct(CurrentProd, values);
     });
 
@@ -107,7 +107,7 @@ function UpdateProduct() {
                         type="text"
                         placeholder='Nombre del producto'
                         className="form-control"
-                        value={product.Name_Products}
+                        value={product?.Name_Products || ""}
                     />
                     {errors.Name_Products && (
                         <p className="text-red-500">

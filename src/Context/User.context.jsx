@@ -132,9 +132,6 @@ export const User = ({ children }) => {
     try {
       const res = await loginRequest(userData);
       if (res && res.data) {
-        Object.keys(res.cookies).forEach((cookieName) => {
-          localStorage.setItem(cookieName, res.cookies[cookieName]);
-        });
         setisAuthenticated(true);
         setUser(res.data);
       }

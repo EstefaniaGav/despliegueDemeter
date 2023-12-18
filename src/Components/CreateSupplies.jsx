@@ -48,7 +48,8 @@ const customStyles = {
 
 function CreateSupplies({
   onDefaultSubmit = null,
-  buttonProps = {
+  whenSubmit = () => null,
+    buttonProps = {
     buttonClass: 'btn btn-primary',
     buttonText: 'Registrar',
   },
@@ -96,11 +97,12 @@ function CreateSupplies({
       SuppliesCategory_ID: selectedCategory.value,
     };
 
-    createSupplies(dataToSend);
+    await createSupplies(dataToSend);
     setOpen(false);
     reset();
     setSelectedMeasure(null);
     setSelectedCategory(null);
+    whenSubmit()
   });
 
   const onCancel = () => {
