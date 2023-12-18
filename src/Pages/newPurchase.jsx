@@ -145,7 +145,7 @@ function NewPurchase() {
 
   };
 
-  const { getSupplies } = useSupplies()
+  const {  getShopSupplies } = useSupplies()
 
   const updateTotalValue = (array = selectedSupplies) => {
     setShoppingBillState(prev => ({
@@ -154,14 +154,14 @@ function NewPurchase() {
     }))
   }
   useEffect(() => {
-    setSuppliesState(getSupplies())
+    setSuppliesState( getShopSupplies())
     // console.log("Supplies")
     updateTotalValue()
     return async () => {
-      const newSupplies = await Promise.resolve(getSupplies())
+      const newSupplies = await Promise.resolve( getShopSupplies())
       setSuppliesState(newSupplies)
     }
-    // console.log(getSupplies())
+    console.log( getShopSupplies())
   }, [])
 
   /**
