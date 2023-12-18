@@ -58,6 +58,7 @@ function NewPurchase() {
   //   "value": 2,
   //   "label": "Jorge"
   // }
+  //
   const onConfirm = async ({ value, uuidv4, navigateToMainShopping }) => {
 
     const condition = selectedSupplies.every(supplier => Object.keys(supplier).every(s => !!s)) && !!value && !!uuidv4
@@ -153,7 +154,7 @@ function NewPurchase() {
   }
   useEffect(() => {
     // setSuppliesState(getSupplies())
-    // console.log("Supplies")
+    console.log("Supplies")
     updateTotalValue()
     return async () => {
       const newSupplies = await Promise.resolve(getShopSupplies())
