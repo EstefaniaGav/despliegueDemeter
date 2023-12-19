@@ -70,7 +70,7 @@ function NewPurchase() {
       setTimeout(() => {
         setError("")
       }, 1000)
-
+ 
       return
     }
 
@@ -161,6 +161,7 @@ function NewPurchase() {
     return async () => {
       const newSupplies = await Promise.resolve(getShopSupplies())
       setSuppliesState(newSupplies)
+      console.log(newSupplies)
     }
     console.log(getShopSupplies())
   }, [])
