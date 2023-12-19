@@ -107,10 +107,12 @@ function NewPurchase() {
   }])
 
   useEffect(() => {
+    
     const updatedAvailableSupplies = suppliesState.filter(
       (supply) => !selectedSupplies.find((selected) => selected.ID_Supplies === supply.ID_Supplies)
     );
     setAvailableSupplies(updatedAvailableSupplies);
+    console.log(availableSupplies)
   }, [suppliesState, selectedSupplies]);
 
   const supplierRef = useRef(null)
@@ -160,7 +162,7 @@ function NewPurchase() {
       const newSupplies = await Promise.resolve(getShopSupplies())
       setSuppliesState(newSupplies)
     }
-    // console.log(getSupplies())
+    console.log(getShopSupplies())
   }, [])
 
   /**
